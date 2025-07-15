@@ -9,7 +9,6 @@ import {
 import type { Action } from "@/engine";
 
 import { resolveAction } from "./actions";
-import type { CompositeAction } from "./actions/composite";
 import type { DropAllAction } from "./actions/drop-all";
 import type { MatchAllAction } from "./actions/match-all";
 
@@ -78,23 +77,16 @@ export default function GameProvider({ schema, children }: Props) {
         return;
       }
 
-      const latestActions: CompositeAction = {
-        type: "COMPOSITE",
-        payload: {
-          actions: [
-            { type: "DROP_ALL" } as DropAllAction,
-            { type: "MATCH_ALL" } as MatchAllAction,
-          ],
-        },
-      };
-
       const latestAction = actionQueue.current?.pop();
 
       if (latestAction) {
-        latestActions.payload.actions.push(latestAction);
+        resolveAction(state, latestAction);
+      } else {
+        actionQueue.current.push(
+          { type: "DROP_ALL" } as DropAllAction,
+          { type: "MATCH_ALL" } as MatchAllAction
+        );
       }
-
-      resolveAction(state, latestActions);
 
       setState({ ...state });
     }, TICK_RATE_MS);

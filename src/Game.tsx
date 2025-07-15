@@ -32,6 +32,10 @@ function App() {
                   key={cell.id}
                   className="w-10 h-10"
                   onClick={() => {
+                    if (selection && !isNextToSelected && !isSelected) {
+                      return;
+                    }
+
                     if (!selection) {
                       setSelection({ row, column });
                     } else {
