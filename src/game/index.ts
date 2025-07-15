@@ -2,7 +2,7 @@ import type { Board } from "@/engine";
 
 export const MIN_MATCH_COUNT = 3;
 
-export const TICK_RATE_MS = 100;
+export const TICK_RATE_MS = 50;
 
 export const APPLE_SCORE = 100;
 export const ORANGE_SCORE = 150;
