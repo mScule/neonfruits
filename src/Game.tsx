@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Action, Location } from "./engine";
 
 import type { FlipAction } from "./game/actions/flip";

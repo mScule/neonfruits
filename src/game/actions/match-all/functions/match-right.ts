@@ -1,4 +1,4 @@
-import type { Board, Location } from "@/engine";
+import type { Location } from "@/engine";
 
 import matchDirection from "./match-direction";
 import type { GameBoard } from "@/game";
