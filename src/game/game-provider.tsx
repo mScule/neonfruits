@@ -15,6 +15,7 @@ import type { MatchAllAction } from "./actions/match-all";
 import { TICK_RATE_MS, type GameContext as GameContextType } from ".";
 import { populateBoard, type GameBoardSchema } from "./level-reader";
 import { createBoard } from "@/engine/board";
+import sleep from "@/utility/sleep";
 
 type GameContextFeatures = {
   pause: () => void;
@@ -26,6 +27,7 @@ type GameContextFeatures = {
 };
 
 type GameContextState = GameContextType & {
+  currentAction: Action | null;
   paused: boolean;
 };
 
@@ -41,6 +43,7 @@ export default function GameProvider({ schema, children }: Props) {
     score: 0,
     board: createBoard(8, 6),
     paused: false,
+    currentAction: null,
   };
 
   const [state, setState] = useState<GameContextState>(
@@ -72,13 +75,21 @@ export default function GameProvider({ schema, children }: Props) {
   }
 
   useEffect(() => {
-    const tick = setInterval(() => {
+    let update: number | null = null;
+
+    const tick = async () => {
       if (state.paused) {
         return;
       }
 
       const latestAction = actionQueue.current?.pop();
 
+      // Make action available for UI
+      setState({ ...state, currentAction: latestAction ?? null });
+
+      await sleep(TICK_RATE_MS);
+
+      // Resolve action
       if (latestAction) {
         resolveAction(state, latestAction);
       } else {
@@ -89,9 +100,15 @@ export default function GameProvider({ schema, children }: Props) {
       }
 
       setState({ ...state });
-    }, TICK_RATE_MS);
 
-    return () => clearInterval(tick);
+      update = requestAnimationFrame(tick);
+    };
+
+    update = requestAnimationFrame(tick);
+
+    return () => {
+      update && cancelAnimationFrame(update);
+    };
   }, []);
 
   return (

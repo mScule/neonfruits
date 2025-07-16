@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { Location } from "./engine";
+import { useEffect, useState } from "react";
+import type { Action, Location } from "./engine";
 
 import type { FlipAction } from "./game/actions/flip";
 import useGame from "./game/use-game";
@@ -7,13 +7,91 @@ import { LuApple, LuBanana, LuCherry } from "react-icons/lu";
 import { PiOrange } from "react-icons/pi";
 import clsx from "clsx";
 
+function getFlipAction(action: Action | null): FlipAction | null {
+  if (!action) {
+    return null;
+  }
+
+  if (action.type !== "FLIP") {
+    return null;
+  }
+
+  return action as FlipAction;
+}
+
+function isFlipFrom(action: Action | null, location: Location): boolean {
+  const flipAction = getFlipAction(action);
+
+  if (!flipAction) {
+    return false;
+  }
+
+  const {
+    payload: { from },
+  } = flipAction;
+
+  return from.row === location.row && from.column === location.column;
+}
+
+function getFlipFormAnimation(action: FlipAction): string {
+  const {
+    payload: { from, to },
+  } = action;
+
+  const isRowStill = from.row === to.row;
+  const isColStill = from.column === to.column;
+
+  const isAbove = from.row < to.row;
+  const isBefore = from.column < to.column;
+
+  return clsx(
+    "transition ease-in-out duration-75",
+    !isRowStill && (isAbove ? "translate-y-11" : "-translate-y-11"),
+    !isColStill && (isBefore ? "translate-x-11" : "-translate-x-11")
+  );
+}
+
+function getFlipToAnimation(action: FlipAction): string {
+  const {
+    payload: { from, to },
+  } = action;
+
+  const isRowStill = from.row === to.row;
+  const isColStill = from.column === to.column;
+
+  const isAbove = from.row > to.row;
+  const isBefore = from.column > to.column;
+
+  return clsx(
+    "transition ease-in-out duration-75",
+    !isRowStill && (isAbove ? "translate-y-11" : "-translate-y-11"),
+    !isColStill && (isBefore ? "translate-x-11" : "-translate-x-11")
+  );
+}
+
+function isFlipTo(action: Action | null, location: Location): boolean {
+  const flipAction = getFlipAction(action);
+
+  if (!flipAction) {
+    return false;
+  }
+
+  const {
+    payload: { to },
+  } = flipAction;
+
+  return to.row === location.row && to.column === location.column;
+}
+
 function App() {
   const game = useGame();
+
+  const action = game.state.currentAction;
 
   const [selection, setSelection] = useState<Location | null>(null);
 
   return (
-    <div className="border-t border-violet-900 p-8 w-fit flex flex-col gap-5 justify-center items-center bg-gradient-to-t from-transparent to-violet-950 rounded-xl">
+    <div className={clsx("border-t border-violet-900 p-8 w-fit flex flex-col gap-5 justify-center items-center bg-gradient-to-t from-transparent to-violet-950 rounded-xl", selection && "transition duration-75")}>
       <div className="flex flex-col gap-1">
         {game.state.board.map((columns, row) => (
           <div className="flex flex-row gap-1">
@@ -56,7 +134,11 @@ function App() {
                   id={cell.id}
                   key={cell.id}
                   className={clsx(
-                    "cursor-pointer transition ease-in-out rounded-2xl"
+                    "cursor-pointer rounded-2xl",
+                    isFlipFrom(action, { row, column }) &&
+                      getFlipFormAnimation(action as FlipAction),
+                    isFlipTo(action, { row, column }) &&
+                      getFlipToAnimation(action as FlipAction)
                   )}
                   onClick={() => {
                     if (selection && !isNextToSelected && !isSelected) {
@@ -89,7 +171,7 @@ function App() {
                       apple: (
                         <div
                           className={clsx(
-                            "drop-shadow-green-500 w-10 h-10 border-2 rounded-2xl border-green-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md transition ease-in",
+                            "drop-shadow-green-500 w-10 h-10 border-2 rounded-2xl border-green-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md",
                             selection &&
                               !isNextToSelected &&
                               !isSelected &&
@@ -102,7 +184,7 @@ function App() {
                       orange: (
                         <div
                           className={clsx(
-                            "drop-shadow-orange-500 w-10 h-10 border-2 rounded-2xl border-orange-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md transition ease-in",
+                            "drop-shadow-orange-500 w-10 h-10 border-2 rounded-2xl border-orange-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md",
                             selection &&
                               !isNextToSelected &&
                               !isSelected &&
@@ -115,7 +197,7 @@ function App() {
                       banana: (
                         <div
                           className={clsx(
-                            "drop-shadow-yellow-500 w-10 h-10 border-2 rounded-2xl font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md transition ease-in",
+                            "drop-shadow-yellow-500 w-10 h-10 border-2 rounded-2xl font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md",
                             selection && !isNextToSelected && !isSelected
                               ? "border-transparent"
                               : "border-yellow-300"
@@ -127,7 +209,7 @@ function App() {
                       cherry: (
                         <div
                           className={clsx(
-                            "drop-shadow-red-500 w-10 h-10 border-2 rounded-2xl border-red-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md transition ease-in",
+                            "drop-shadow-red-500 w-10 h-10 border-2 rounded-2xl border-red-300 font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md",
                             selection &&
                               !isNextToSelected &&
                               !isSelected &&
