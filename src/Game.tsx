@@ -91,7 +91,7 @@ function App() {
   const [selection, setSelection] = useState<Location | null>(null);
 
   return (
-    <div className={clsx("border-t border-violet-900 p-8 w-fit flex flex-col gap-5 justify-center items-center bg-gradient-to-t from-transparent to-violet-950 rounded-xl", selection && "transition duration-75")}>
+    <div className={clsx("border-t border-violet-900 p-8 w-fit flex flex-col gap-5 justify-center items-center bg-gradient-to-t from-transparent to-violet-950 rounded-xl")}>
       <div className="flex flex-col gap-1">
         {game.state.board.map((columns, row) => (
           <div className="flex flex-row gap-1">
