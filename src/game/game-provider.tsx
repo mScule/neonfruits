@@ -6,7 +6,7 @@ import {
   type PropsWithChildren,
 } from "react";
 
-import type { Action } from "@/engine";
+import type { Action, Location } from "@/engine";
 
 import { resolveAction } from "./actions";
 import type { DropAllAction } from "./actions/drop-all";
@@ -21,12 +21,14 @@ type GameContextFeatures = {
   pause: () => void;
   reset: () => void;
 
+  select: (location: Location | null) => void;
   queueAction: <T extends Action>(action: T) => void;
 
   state: GameContextState;
 };
 
 type GameContextState = GameContextType & {
+  selection: Location | null;
   currentAction: Action | null;
   paused: boolean;
 };
@@ -42,11 +44,13 @@ export default function GameProvider({ schema, children }: Props) {
     moves: 0,
     score: 0,
     board: createBoard(8, 6),
-    paused: false,
+
+    selection: null,
     currentAction: null,
+    paused: false,
   };
 
-  const [state, setState] = useState<GameContextState>(
+  const [state, setState] = useState<Omit<GameContextState, "selection">>(
     (() => {
       const state = structuredClone(defaultState);
 
@@ -55,6 +59,8 @@ export default function GameProvider({ schema, children }: Props) {
       return state;
     })()
   );
+
+  const [selection, setSelection] = useState<Location | null>(null);
 
   const actionQueue = useRef<Action[]>([]);
 
@@ -68,6 +74,10 @@ export default function GameProvider({ schema, children }: Props) {
     populateBoard(state.board, schema);
 
     setState({ ...state });
+  }
+
+  function select(location: Location | null) {
+    setSelection(location);
   }
 
   function queueAction<T extends Action>(action: T) {
@@ -112,7 +122,15 @@ export default function GameProvider({ schema, children }: Props) {
   }, []);
 
   return (
-    <GameContext.Provider value={{ pause, reset, queueAction, state }}>
+    <GameContext.Provider
+      value={{
+        pause,
+        reset,
+        select,
+        queueAction,
+        state: { ...state, selection },
+      }}
+    >
       {children}
     </GameContext.Provider>
   );
