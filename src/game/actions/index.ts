@@ -7,11 +7,17 @@ import { FLIP_ACTION, flipAction } from "./flip";
 import { DROP_ALL_ACTION, dropAllAction } from "./drop-all";
 import { MATCH_ALL_ACTION, matchAllAction } from "./match-all";
 import { COMPOSITE_ACTION, compositeAction } from "./composite";
+import { CLEAR_ACTION, clearAction } from "./clear";
+import { COUNT_SCORE_ACTION, countScoreAction } from "./count-score";
+import { DROP_ACTION, dropAction } from "./drop";
 
 export const resolveAction = createActionResolver<GameContext>({
   [ADD_ACTION]: addAction,
   [FLIP_ACTION]: flipAction,
   [DROP_ALL_ACTION]: dropAllAction,
+  [DROP_ACTION]: dropAction,
   [MATCH_ALL_ACTION]: matchAllAction,
   [COMPOSITE_ACTION]: compositeAction,
+  [CLEAR_ACTION]: clearAction,
+  [COUNT_SCORE_ACTION]: countScoreAction,
 });

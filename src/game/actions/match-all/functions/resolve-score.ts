@@ -7,7 +7,7 @@ import {
   type GameContent,
 } from "@/game";
 
-export default function resolveScore(content: Content<GameContent>) {
+export default function resolveScore(content: Content<GameContent>): number {
   switch (content) {
     case "empty":
       return 0;

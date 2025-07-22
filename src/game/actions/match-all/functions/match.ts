@@ -1,10 +1,12 @@
 import { MIN_MATCH_COUNT, type GameContext } from "@/game";
-import { get, clear } from "@/engine/board";
+import { get } from "@/engine/board";
 
 import matchSurroundingHorizontal from "./match-surrounding-horizontal";
 import matchSurroundingVertical from "./match-surrounding-vertical";
-import resolveScore from "./resolve-score";
+
 import type { Location } from "@/engine";
+import type { ClearAction } from "../../clear";
+import type { CountScoreAction } from "../../count-score";
 
 export default function match(context: GameContext, at: Location) {
   const base = get(context.board, at);
@@ -43,9 +45,17 @@ export default function match(context: GameContext, at: Location) {
     return;
   }
 
-  context.score += resolveScore(base) * matchCount;
+  const countScore: CountScoreAction = {
+    type: "COUNT_SCORE",
+    payload: matches,
+  };
 
-  clear(context.board, matches);
+  const clear: ClearAction = {
+    type: "CLEAR",
+    payload: matches,
+  };
+
+  context.actions.push(clear, countScore);
 
   return true;
 }
