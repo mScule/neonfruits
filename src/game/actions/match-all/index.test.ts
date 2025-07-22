@@ -7,6 +7,7 @@ import type { MatchAllAction } from ".";
 
 function createMockContext(): GameContext {
   const context: GameContext = {
+    actions: [],
     board: createBoard<GameContent>(5, 5),
     moves: 0,
     score: 0,

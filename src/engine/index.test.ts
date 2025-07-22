@@ -10,7 +10,7 @@ import type { AddAction } from "@/game/actions/add";
 import type { Location } from ".";
 import { resolveAction } from "@/game/actions";
 import type { FlipAction } from "@/game/actions/flip";
-import type { DropAllAction } from "@/game/actions/drop";
+import type { DropAllAction } from "@/game/actions/drop-all";
 
 function mockLevel1(): GameBoard {
   const board = createBoard<GameContent>(5, 2);
@@ -103,7 +103,7 @@ describe("add action", () => {
       payload: { location, content: "apple" },
     };
 
-    resolveAction({ score: 0, moves: 0, board }, action);
+    resolveAction({ score: 0, moves: 0, board, actions: [] }, action);
 
     const cell = get(board, location);
 
@@ -126,7 +126,7 @@ describe("add action", () => {
     ];
 
     for (const action of actions) {
-      resolveAction({ score: 0, moves: 0, board }, action);
+      resolveAction({ score: 0, moves: 0, board, actions: [] }, action);
 
       const cell = get(board, action.payload.location);
 
@@ -154,7 +154,7 @@ describe("flip action", () => {
       payload: { from: topLeftLocation, to: topRightLocation },
     };
 
-    resolveAction({ score: 0, moves: 0, board: level }, action);
+    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
 
     // Check flipped position
     topLeft = get(level, topLeftLocation);
@@ -180,7 +180,7 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level }, action);
+    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
 
     expect(
       isEqualToSchema(level, [
@@ -192,7 +192,7 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level }, action);
+    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
 
     expect(
       isEqualToSchema(level, [
@@ -204,7 +204,7 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level }, action);
+    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
 
     expect(
       isEqualToSchema(level, [
