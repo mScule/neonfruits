@@ -57,7 +57,7 @@ export default function CellContent({ type, variant }: Props) {
   return (
     <div
       className={clsx(
-        "w-10 h-10 rounded-2xl font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md",
+        "w-10 h-10 rounded-2xl font-bold text-center text-2xl flex flex-row justify-center items-center drop-shadow-md cursor-pointer",
         shadowColor,
         variant === "highlighted" && `border-2 ${borderColor}`
       )}

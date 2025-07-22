@@ -1,8 +1,10 @@
-import type { Board } from "@/engine";
+import type { Action, Board } from "@/engine";
+
+export const DEBUG_MODE = false;
 
 export const MIN_MATCH_COUNT = 3;
 
-export const TICK_RATE_MS = 75;
+export const TICK_RATE_MS = 100;
 
 export const APPLE_SCORE = 100;
 export const ORANGE_SCORE = 150;
@@ -15,6 +17,7 @@ export type GameContext = {
   moves: number;
   score: number;
   board: Board<GameContent>;
+  actions: Action[];
 };
 
 export type GameBoard = Board<GameContent>;

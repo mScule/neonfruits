@@ -10,7 +10,7 @@ import type { AddAction } from "@/game/actions/add";
 import type { Location } from ".";
 import { resolveAction } from "@/game/actions";
 import type { FlipAction } from "@/game/actions/flip";
-import type { DropAllAction } from "@/game/actions/drop-all";
+import type { DropAllAction } from "@/game/actions/drop";
 
 function mockLevel1(): GameBoard {
   const board = createBoard<GameContent>(5, 2);

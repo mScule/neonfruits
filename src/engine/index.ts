@@ -32,3 +32,18 @@ export function areLocationsInContact(a: Location, b: Location): boolean {
 
   return isAbove() || isBelow() || isBefore() || isAfter();
 }
+
+export function getActionPayload<A extends PayloadAction>(
+  action: Action | null,
+  type: A["type"]
+): null | A["payload"] {
+  if (!action) {
+    return null;
+  }
+
+  if (action.type !== type) {
+    return null;
+  }
+
+  return (action as A).payload;
+}
