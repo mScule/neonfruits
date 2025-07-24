@@ -4,6 +4,7 @@ import { isEqualToSchema, populateBoard } from "@/game/level-reader";
 import { expect, it, describe } from "vitest";
 import { resolveAction } from "..";
 import type { MatchAllAction } from ".";
+import range from "@/utility/range";
 
 function createMockContext(): GameContext {
   const context: GameContext = {
@@ -48,7 +49,17 @@ describe("match all -action", () => {
 
     const action: MatchAllAction = { type: "MATCH_ALL" };
 
-    resolveAction(context, action);
+    context.actions.push(action);
+
+    resolveAction(context, context.actions.pop()!);
+
+    console.dir(context.actions)
+
+    for (const _ of range(context.actions.length)) {
+      const action = context.actions.pop()!
+      console.log(action?.type);
+      resolveAction(context, action);
+    }
 
     expect(
       isEqualToSchema(context.board, [

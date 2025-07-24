@@ -1,4 +1,4 @@
-import { MIN_MATCH_COUNT, type GameContext } from "@/game";
+import { MIN_MATCH_COUNT, type GameBoard, type GameContext } from "@/game";
 import { get } from "@/engine/board";
 
 import matchSurroundingHorizontal from "./match-surrounding-horizontal";
@@ -8,8 +8,8 @@ import type { Location } from "@/engine";
 import type { ClearAction } from "../../clear";
 import type { CountScoreAction } from "../../count-score";
 
-export default function match(context: GameContext, at: Location) {
-  const base = get(context.board, at);
+export default function match(context: GameContext, matchBoard: GameBoard, at: Location) {
+  const base = get(matchBoard, at);
 
   if (!base) {
     return;
@@ -22,7 +22,7 @@ export default function match(context: GameContext, at: Location) {
   const matches = [at];
 
   const surroundingHorizontalMatches = matchSurroundingHorizontal(
-    context.board,
+    matchBoard,
     at
   );
 
@@ -31,7 +31,7 @@ export default function match(context: GameContext, at: Location) {
   }
 
   const surroundingVerticalMatches = matchSurroundingVertical(
-    context.board,
+    matchBoard,
     at
   );
 
@@ -43,6 +43,10 @@ export default function match(context: GameContext, at: Location) {
 
   if (matchCount < MIN_MATCH_COUNT) {
     return;
+  }
+
+  for (const match of matches) {
+    matchBoard[match.row][match.column] = { id: match.row + match.column + "", value: "empty" }
   }
 
   const countScore: CountScoreAction = {

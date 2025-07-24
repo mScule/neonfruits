@@ -16,9 +16,11 @@ export type MatchAllAction = Action<typeof MATCH_ALL_ACTION>;
 export const matchAllAction: ActionImplementation<GameContext, MatchAllAction> = (
   context
 ) => {
+  const matchBoard = structuredClone(context.board);
+
   for (const [row, columns] of context.board.entries()) {
     for (const [column] of columns.entries()) {
-      match(context, { row, column })
+      match(context, matchBoard, { row, column })
     }
   }
 };

@@ -1,4 +1,4 @@
-import type { GameBoard, GameContent } from "@/game";
+import type { GameBoard, GameContent, GameContext } from "@/game";
 import { describe, it, expect } from "vitest";
 import { createBoard, get, set } from "./board";
 import {
@@ -166,12 +166,18 @@ describe("flip action", () => {
 });
 describe("drop action", () => {
   it("drops items if there are empty spaces below", () => {
-    const level = mockLevel2();
+    const context: GameContext = {
+      score: 0,
+      moves: 0,
+      board: mockLevel2(),
+      actions: [],
+    };
 
     const action: DropAllAction = { type: "DROP_ALL" };
+    context.actions.push(action);
 
     expect(
-      isEqualToSchema(level, [
+      isEqualToSchema(context.board, [
         ["a", "o", "a"],
         ["a", ".", "."],
         [".", ".", "a"],
@@ -180,10 +186,11 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
+    resolveAction(context, context.actions.pop()!);
+    resolveAction(context, context.actions.pop()!);
 
     expect(
-      isEqualToSchema(level, [
+      isEqualToSchema(context.board, [
         [".", ".", "."],
         ["a", "o", "a"],
         ["a", ".", "."],
@@ -192,10 +199,13 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
+    context.actions.push(action)
+
+    resolveAction(context, context.actions.pop()!);
+    resolveAction(context, context.actions.pop()!);
 
     expect(
-      isEqualToSchema(level, [
+      isEqualToSchema(context.board, [
         [".", ".", "."],
         [".", ".", "."],
         ["a", "o", "a"],
@@ -204,10 +214,13 @@ describe("drop action", () => {
       ])
     ).toBe(true);
 
-    resolveAction({ score: 0, moves: 0, board: level, actions: [] }, action);
+    context.actions.push(action)
+
+    resolveAction(context, context.actions.pop()!);
+    resolveAction(context, context.actions.pop()!);
 
     expect(
-      isEqualToSchema(level, [
+      isEqualToSchema(context.board, [
         [".", ".", "."],
         [".", ".", "."],
         ["a", "o", "a"],
