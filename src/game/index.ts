@@ -4,7 +4,7 @@ export const DEBUG_MODE = false;
 
 export const MIN_MATCH_COUNT = 3;
 
-export const TICK_RATE_MS = 100;
+export const TICK_RATE_MS = 250;
 
 export const APPLE_SCORE = 100;
 export const ORANGE_SCORE = 150;

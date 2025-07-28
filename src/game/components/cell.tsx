@@ -15,13 +15,17 @@ import type { CountScoreAction } from "@/game/actions/count-score";
 
 import CellContent from "./cell-content";
 import { type DropAction } from "../actions/drop";
+import type { FlipAnimationAction } from "../actions/flip-animation";
 
 type Props = {
   location: Location;
 };
 
 function isFlipFrom(action: Action | null, location: Location): boolean {
-  const flipAction = getActionPayload<FlipAction>(action, "FLIP");
+  const flipAction = getActionPayload<FlipAnimationAction>(
+    action,
+    "FLIP_ANIMATION"
+  );
 
   if (!flipAction) {
     return false;
@@ -33,7 +37,10 @@ function isFlipFrom(action: Action | null, location: Location): boolean {
 }
 
 function isFlipTo(action: Action | null, location: Location): boolean {
-  const flipAction = getActionPayload<FlipAction>(action, "FLIP");
+  const flipAction = getActionPayload<FlipAnimationAction>(
+    action,
+    "FLIP_ANIMATION"
+  );
 
   if (!flipAction) {
     return false;
@@ -45,9 +52,8 @@ function isFlipTo(action: Action | null, location: Location): boolean {
 }
 
 function getFlipFormAnimation(action: FlipAction): string {
-  const {
-    payload: { from, to },
-  } = action;
+  const { payload } = action;
+  const { from, to } = payload;
 
   const isRowStill = from.row === to.row;
   const isColStill = from.column === to.column;
@@ -62,19 +68,18 @@ function getFlipFormAnimation(action: FlipAction): string {
 }
 
 function getFlipToAnimation(action: FlipAction): string {
-  const {
-    payload: { from, to },
-  } = action;
+  const { payload } = action;
+  const { from, to } = payload;
 
   const isRowStill = from.row === to.row;
   const isColStill = from.column === to.column;
 
-  const isAbove = from.row > to.row;
-  const isBefore = from.column > to.column;
+  const isBelow = from.row > to.row;
+  const isAfter = from.column > to.column;
 
   return clsx(
-    !isRowStill && (isAbove ? "translate-y-11" : "-translate-y-11"),
-    !isColStill && (isBefore ? "translate-x-11" : "-translate-x-11")
+    !isRowStill && (isBelow ? "translate-y-11" : "-translate-y-11"),
+    !isColStill && (isAfter ? "translate-x-11" : "-translate-x-11")
   );
 }
 
@@ -111,7 +116,16 @@ export default function Cell({ location }: Props) {
         to,
       },
     };
+
+    const animation: FlipAnimationAction = {
+      type: "FLIP_ANIMATION",
+      payload: {
+        from,
+        to,
+      },
+    };
     queueAction(action);
+    queueAction(animation);
     select(null);
   }
 
@@ -150,6 +164,19 @@ export default function Cell({ location }: Props) {
     flip(selection, location);
   }
 
+  const translateClass = (() => {
+    if (isFlipFrom(state.currentAction, location)) {
+      return getFlipFormAnimation(state.currentAction as FlipAction);
+    }
+    if (isFlipTo(state.currentAction, location)) {
+      return getFlipToAnimation(state.currentAction as FlipAction);
+    }
+    if (isFalling) {
+      return "-translate-y-11";
+    }
+    return "";
+  })();
+
   if (isEmpty) {
     return (
       <div
@@ -169,14 +196,12 @@ export default function Cell({ location }: Props) {
 
   return (
     <div
+      key={JSON.stringify(location)}
       className={clsx(
-        "w-10 h-10 transition",
-        isFlipFrom(state.currentAction, location) &&
-          getFlipFormAnimation(state.currentAction as FlipAction),
-        isFlipTo(state.currentAction, location) &&
-          getFlipToAnimation(state.currentAction as FlipAction),
+        "w-10 h-10 transition-all",
         isFalling && "-translate-y-11",
-        isMatched && "opacity-0"
+        isMatched && "opacity-0",
+        translateClass
       )}
       onClick={handleContentful}
     >

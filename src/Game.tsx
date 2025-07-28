@@ -1,6 +1,5 @@
 import useGame from "./game/use-game";
 import Cell from "./game/components/cell";
-import { DEBUG_MODE } from "./game";
 
 function App() {
   const game = useGame();
@@ -20,14 +19,6 @@ function App() {
         <span>score: {game.state.score}</span>
         <span>moves: {game.state.moves}</span>
       </div>
-      {DEBUG_MODE && (
-        <button
-          className="text-violet-200 font-neon drop-shadow-lg drop-shadow-violet-800 border p-1 rounded cursor-pointer"
-          onClick={game.debug.next}
-        >
-          DEBUG NEXT
-        </button>
-      )}
     </div>
   );
 }

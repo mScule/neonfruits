@@ -121,10 +121,6 @@ export default function GameProvider({ schema, children }: Props) {
     let update: number | null = null;
 
     async function frame() {
-      if (state.paused || DEBUG_MODE) {
-        return;
-      }
-
       await tick();
 
       update = requestAnimationFrame(frame);

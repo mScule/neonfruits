@@ -38,6 +38,10 @@ export const dropAllAction: ActionImplementation<GameContext, DropAllAction> = (
         continue;
       }
 
+      if (above === "empty") {
+        continue;
+      }
+
       if (below !== "empty") {
         continue;
       }

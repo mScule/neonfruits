@@ -11,9 +11,12 @@ import { CLEAR_ACTION, clearAction } from "./clear";
 import { COUNT_SCORE_ACTION, countScoreAction } from "./count-score";
 import { DROP_ACTION, dropAction } from "./drop";
 
+import { FLIP_ANIMATION_ACTION, flipAnimationAction } from "./flip-animation";
+
 export const resolveAction = createActionResolver<GameContext>({
   [ADD_ACTION]: addAction,
   [FLIP_ACTION]: flipAction,
+  [FLIP_ANIMATION_ACTION]: flipAnimationAction,
   [DROP_ALL_ACTION]: dropAllAction,
   [DROP_ACTION]: dropAction,
   [MATCH_ALL_ACTION]: matchAllAction,
