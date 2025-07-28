@@ -11,7 +11,6 @@ import { resolveAction } from "./actions";
 import type { MatchAllAction } from "./actions/match-all";
 
 import {
-  DEBUG_MODE,
   TICK_RATE_MS,
   type GameContext as GameContextType,
 } from ".";
