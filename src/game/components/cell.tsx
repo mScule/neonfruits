@@ -15,16 +15,15 @@ import type { CountScoreAction } from "@/game/actions/count-score";
 
 import CellContent from "./cell-content";
 import { type DropAction } from "../actions/drop";
-import type { FlipAnimationAction } from "../actions/flip-animation";
 
 type Props = {
   location: Location;
 };
 
 function isFlipFrom(action: Action | null, location: Location): boolean {
-  const flipAction = getActionPayload<FlipAnimationAction>(
+  const flipAction = getActionPayload<FlipAction>(
     action,
-    "FLIP_ANIMATION"
+    "FLIP"
   );
 
   if (!flipAction) {
@@ -37,9 +36,9 @@ function isFlipFrom(action: Action | null, location: Location): boolean {
 }
 
 function isFlipTo(action: Action | null, location: Location): boolean {
-  const flipAction = getActionPayload<FlipAnimationAction>(
+  const flipAction = getActionPayload<FlipAction>(
     action,
-    "FLIP_ANIMATION"
+    "FLIP"
   );
 
   if (!flipAction) {
@@ -117,15 +116,7 @@ export default function Cell({ location }: Props) {
       },
     };
 
-    const animation: FlipAnimationAction = {
-      type: "FLIP_ANIMATION",
-      payload: {
-        from,
-        to,
-      },
-    };
     queueAction(action);
-    queueAction(animation);
     select(null);
   }
 
@@ -164,26 +155,13 @@ export default function Cell({ location }: Props) {
     flip(selection, location);
   }
 
-  const translateClass = (() => {
-    if (isFlipFrom(state.currentAction, location)) {
-      return getFlipFormAnimation(state.currentAction as FlipAction);
-    }
-    if (isFlipTo(state.currentAction, location)) {
-      return getFlipToAnimation(state.currentAction as FlipAction);
-    }
-    if (isFalling) {
-      return "-translate-y-11";
-    }
-    return "";
-  })();
-
   if (isEmpty) {
     return (
       <div
         className={clsx(
           "w-10 h-10 flex flex-row justify-center items-center",
           isNextToSelected &&
-            "border-2 rounded-2xl border-violet-300 drop-shadow-md drop-shadow-violet-500"
+            "border-2 rounded-2xl border-violet-300 drop-shadow-md drop-shadow-violet-500 cursor-pointer"
         )}
         onClick={handleEmpty}
       >
@@ -201,7 +179,10 @@ export default function Cell({ location }: Props) {
         "w-10 h-10 transition-all",
         isFalling && "-translate-y-11",
         isMatched && "opacity-0",
-        translateClass
+        isFlipFrom(state.currentAction, location) &&
+          getFlipFormAnimation(state.currentAction as FlipAction),
+        isFlipTo(state.currentAction, location) &&
+          getFlipToAnimation(state.currentAction as FlipAction)
       )}
       onClick={handleContentful}
     >
